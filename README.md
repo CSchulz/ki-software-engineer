@@ -1,5 +1,3 @@
-
-
 <h1 align="center">Modern Angular Workshop</h1>
 
 <p align="center">
