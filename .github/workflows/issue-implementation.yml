@@ -38,6 +38,7 @@ jobs:
       
           [permissions.github-issues.network.domains]
           "api.github.com" = "allow"
+          "github.com" = "allow"
 
           [permissions.github-issues.filesystem]
           ":workspace_roots" = { ".git" = "write" }
