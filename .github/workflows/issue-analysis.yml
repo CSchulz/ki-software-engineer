@@ -18,15 +18,26 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      - name: Configure Codex
+        run: |
+          mkdir -p "$RUNNER_TEMP/codex-home"
+      
+          cat > "$RUNNER_TEMP/codex-home/config.toml" <<'EOF'
+          [permissions.github-issues]
+          extends = ":workspace"
+      
+          [permissions.github-issues.network]
+          enabled = true
+          EOF
+
       - name: Analyze Issue with Codex
         uses: openai/codex-action@v1
         env:
           GH_TOKEN: ${{ github.token }}
         with:
           openai-api-key: ${{ secrets.OPENAI_API_KEY }}
-          sandbox: workspace-write
-          codex-args: >-
-            -c sandbox_workspace_write.network_access=true
+          permission-profile: github-issues
+          safety-strategy: drop-sudo
           model: "gpt-5.6-luna"
           prompt: |
             /ci-re-review
