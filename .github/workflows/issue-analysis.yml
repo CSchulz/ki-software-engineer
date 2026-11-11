@@ -23,11 +23,19 @@ jobs:
           mkdir -p "$RUNNER_TEMP/codex-home"
       
           cat > "$RUNNER_TEMP/codex-home/config.toml" <<'EOF'
+          default_permissions = "github-issues"
+      
+          [features]
+          network_proxy = true
+      
           [permissions.github-issues]
           extends = ":workspace"
       
           [permissions.github-issues.network]
           enabled = true
+      
+          [permissions.github-issues.network.domains]
+          "api.github.com" = "allow"
           EOF
 
       - name: Analyze Issue with Codex
