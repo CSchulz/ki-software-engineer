@@ -1,0 +1,100 @@
+<div class="container mx-auto max-w-5xl px-4 py-8 sm:py-12" *ngIf="vm$ | async as vm">
+  <a
+    routerLink="/"
+    class="mb-6 inline-flex items-center rounded-md px-2 py-1 font-medium text-blue-700 hover:bg-blue-50 hover:text-blue-800 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-blue-300"
+  >
+    <span aria-hidden="true" class="mr-2">←</span>
+    Back to Books
+  </a>
+
+  <section *ngIf="vm.status === 'loading'" role="status" aria-live="polite" class="py-20 text-center">
+    <div
+      class="mx-auto h-14 w-14 animate-spin rounded-full border-4 border-gray-200 border-t-blue-700"
+      aria-hidden="true"
+    ></div>
+    <h1 class="mt-5 text-xl font-semibold text-gray-800">Loading book details...</h1>
+    <p class="mt-2 text-gray-600">Please wait while the book is retrieved.</p>
+  </section>
+
+  <section
+    *ngIf="vm.status === 'not-found'"
+    role="alert"
+    class="rounded-xl border border-blue-100 bg-blue-50 px-6 py-14 text-center"
+  >
+    <h1 class="text-2xl font-bold text-blue-900">Book not found</h1>
+    <p class="mt-3 text-blue-800">The requested book does not exist or is no longer available.</p>
+  </section>
+
+  <section
+    *ngIf="vm.status === 'error'"
+    role="alert"
+    class="rounded-xl border border-red-200 bg-red-50 px-6 py-14 text-center"
+  >
+    <h1 class="text-2xl font-bold text-red-800">Unable to load book details</h1>
+    <p class="mt-3 text-red-700">The service is currently unavailable. Please try again later.</p>
+  </section>
+
+  <article *ngIf="vm.status === 'success'" class="overflow-hidden rounded-2xl bg-white shadow-xl">
+    <div class="grid grid-cols-1 md:grid-cols-[minmax(16rem,2fr)_3fr]">
+      <figure class="flex min-h-80 items-center justify-center bg-blue-50 p-6 sm:p-10">
+        <img
+          *ngIf="vm.book.cover"
+          [src]="vm.book.cover"
+          [alt]="'Cover of ' + vm.book.title"
+          class="max-h-[32rem] w-full max-w-sm rounded-md object-contain shadow-md"
+        />
+        <div
+          *ngIf="!vm.book.cover"
+          role="img"
+          [attr.aria-label]="'No cover available for ' + vm.book.title"
+          class="flex aspect-[3/4] w-full max-w-xs flex-col items-center justify-center rounded-lg border-2 border-dashed border-blue-200 bg-white px-6 text-center text-blue-800"
+        >
+          <span class="font-semibold">No cover available</span>
+        </div>
+      </figure>
+
+      <div class="p-6 sm:p-10">
+        <header class="border-b border-gray-200 pb-6">
+          <div class="mb-2 flex items-center justify-between gap-4">
+            <p class="text-sm font-semibold uppercase tracking-wide text-blue-700">Book details</p>
+            <a
+              [routerLink]="['/books', vm.book.id, 'edit']"
+              class="rounded-md px-3 py-2 text-sm font-semibold text-blue-700 hover:bg-blue-50 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-blue-300"
+            >
+              Edit {{ vm.book.title }}
+            </a>
+          </div>
+          <h1 class="text-3xl font-bold leading-tight text-gray-900 sm:text-4xl">{{ vm.book.title }}</h1>
+          <p *ngIf="vm.book.subtitle" class="mt-3 text-xl text-gray-600">{{ vm.book.subtitle }}</p>
+          <p class="mt-4 text-lg font-medium text-blue-700">by {{ vm.book.author }}</p>
+        </header>
+
+        <dl class="grid grid-cols-1 gap-x-8 gap-y-5 border-b border-gray-200 py-7 sm:grid-cols-2">
+          <div>
+            <dt class="text-sm font-medium text-gray-500">Publisher</dt>
+            <dd class="mt-1 text-gray-900">{{ vm.book.publisher }}</dd>
+          </div>
+          <div>
+            <dt class="text-sm font-medium text-gray-500">ISBN</dt>
+            <dd class="mt-1 text-gray-900">{{ vm.book.isbn }}</dd>
+          </div>
+          <div>
+            <dt class="text-sm font-medium text-gray-500">Number of pages</dt>
+            <dd class="mt-1 text-gray-900">{{ vm.book.numPages }}</dd>
+          </div>
+          <div>
+            <dt class="text-sm font-medium text-gray-500">Price</dt>
+            <dd class="mt-1 text-lg font-semibold text-blue-700">{{ vm.book.price }}</dd>
+          </div>
+        </dl>
+
+        <section class="pt-7" aria-labelledby="abstract-heading">
+          <h2 id="abstract-heading" class="text-xl font-semibold text-gray-900">Abstract</h2>
+          <p class="mt-3 whitespace-pre-line leading-7 text-gray-700">
+            {{ vm.book.abstract || 'No abstract available.' }}
+          </p>
+        </section>
+      </div>
+    </div>
+  </article>
+</div>

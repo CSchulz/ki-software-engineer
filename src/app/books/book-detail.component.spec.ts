@@ -105,6 +105,16 @@ describe('BookDetailComponent', () => {
     expect(element.querySelector('[role="alert"] h1')?.textContent).toContain('Unable to load book details');
     expect(element.textContent).toContain('try again later');
   });
+
+  it('AC: exposes an edit link from book details to the shared edit route', async () => {
+    const element = await createComponent(of(completeBook));
+    const editLink = element.querySelector('a[href="/books/angular-20/edit"]') as HTMLAnchorElement | null;
+
+    expect(editLink).withContext('an edit link should be rendered for the displayed book').not.toBeNull();
+    if (!editLink) return;
+
+    expect(editLink?.textContent).withContext('the edit link should have an accessible name').toContain('Edit');
+  });
 });
 
 describe('book detail route', () => {

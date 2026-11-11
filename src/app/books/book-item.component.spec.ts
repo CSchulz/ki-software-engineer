@@ -7,6 +7,9 @@ import { BookItemComponent } from './book-item.component';
 @Component({ standalone: true, template: '<p>Book details</p>' })
 class DetailTargetComponent {}
 
+@Component({ standalone: true, template: '<p>Edit book</p>' })
+class EditTargetComponent {}
+
 describe('BookItemComponent', () => {
   let fixture: ComponentFixture<BookItemComponent>;
   let router: Router;
@@ -14,7 +17,12 @@ describe('BookItemComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [BookItemComponent],
-      providers: [provideRouter([{ path: 'books/:id', component: DetailTargetComponent }])]
+      providers: [
+        provideRouter([
+          { path: 'books/:id', component: DetailTargetComponent },
+          { path: 'books/:id/edit', component: EditTargetComponent }
+        ])
+      ]
     }).compileComponents();
 
     fixture = TestBed.createComponent(BookItemComponent);
@@ -45,5 +53,16 @@ describe('BookItemComponent', () => {
     await fixture.whenStable();
 
     expect(router.url).toBe('/books/angular-20');
+  });
+
+  it('AC: exposes an edit link from the book list to the shared edit route', () => {
+    const editLink = fixture.nativeElement.querySelector(
+      'a[href="/books/angular-20/edit"]'
+    ) as HTMLAnchorElement | null;
+
+    expect(editLink).withContext('an edit link should be rendered for the listed book').not.toBeNull();
+    if (!editLink) return;
+
+    expect(editLink?.textContent).withContext('the edit link should have an accessible name').toContain('Edit');
   });
 });

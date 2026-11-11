@@ -23,4 +23,11 @@ export class BookApiClient {
   getBookById(id: string): Observable<Book> {
     return this.http.get<Book>(`${this.apiUrl}/${id}`);
   }
+
+  updateBook(
+    id: string,
+    changes: Pick<Book, 'title' | 'subtitle' | 'author' | 'cover' | 'abstract'>
+  ): Observable<Book> {
+    return this.http.patch<Book>(`${this.apiUrl}/${id}`, changes);
+  }
 }
