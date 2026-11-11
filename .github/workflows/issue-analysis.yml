@@ -25,6 +25,8 @@ jobs:
         with:
           openai-api-key: ${{ secrets.OPENAI_API_KEY }}
           permission-profile: ":workspace"
+          codex-args: >-
+            -c sandbox_workspace_write.network_access=true
           model: "gpt-5.6-luna"
           prompt: |
             /ci-re-review
