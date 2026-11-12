@@ -2,7 +2,7 @@ name: Auto-Fix CI Failures with Claude
 
 on:
   workflow_run:
-    workflows: ['Deploy to GitHub Pages']
+    workflows: ['CI']
     types:
       - completed
 
@@ -10,7 +10,7 @@ jobs:
   auto-fix:
     # Only run if the CI workflow failed
     if: ${{ github.event.workflow_run.conclusion == 'failure' }}
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 15
     permissions:
       contents: write
