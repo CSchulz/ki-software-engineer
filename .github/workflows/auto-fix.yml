@@ -103,18 +103,26 @@ jobs:
           npm run build
 
       - name: Create Pull Request if changes were made
-        if: success()
+        env:
+          GH_TOKEN: ${{ github.token }}
+          BASE_BRANCH: ${{ github.event.workflow_run.head_branch }}
+          FAILED_RUN_ID: ${{ github.event.workflow_run.id }}
         run: |
-          if [[ -n $(git status --porcelain) ]]; then
-            echo "Changes detected, but they should already be committed by Claude"
-            echo "Checking if we're on main branch..."
-            if [[ $(git branch --show-current) == "main" ]]; then
-              echo "Direct commits to main detected"
-              git log -1 --pretty=format:"%h - %s (%an)"
-            fi
-          else
-            echo "No uncommitted changes found"
+          set -euo pipefail
+          BRANCH_NAME="auto-fix/${FAILED_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
+          test "$(git branch --show-current)" = "$BRANCH_NAME"
+          git diff --check
+          git add --all
+          if git diff --cached --quiet; then
+            echo "No changes to publish."
+            exit 0
           fi
+          git commit -m "fix: resolve CI failure in run ${FAILED_RUN_ID}"
+          git push --set-upstream origin "$BRANCH_NAME"
+          gh pr create --repo "$GITHUB_REPOSITORY" \
+            --base "$BASE_BRANCH" --head "$BRANCH_NAME" \
+            --title "fix: resolve CI failure in run ${FAILED_RUN_ID}" \
+            --body-file "$RUNNER_TEMP/auto-fix-summary.md"
 
   notify-failure:
     if: ${{ always() && needs.auto-fix.result == 'failure' }}
